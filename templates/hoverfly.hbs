@@ -1,0 +1,45 @@
+{
+    "meta": {
+        "timeExported": "{{isoTimeRFC3339}}",
+        "schemaVersion": "v5",
+        "hoverflyVersion": "v0.17.7"
+    },
+    "data": {
+        "pairs": [{{#Interactions}}{
+            "request": {
+                "path": [{
+                    "matcher": "exact",
+                    "value": "{{Request.Path}}"
+                }],
+                "method": [{
+                    "matcher": "exact",
+                    "value": "{{Request.Method}}"
+                }],
+                "destination": [{
+                    "matcher": "exact",
+                    "value": "{{envVar "HOSTNAME"}}"
+                }],
+                "scheme": [{
+                    "matcher": "glob",
+                    "value": "http.*"
+                }],
+                {{#if Request.Body}}"body": [{ 
+                    "matcher": "exact",
+                    "value": {{{toJSON Request.Body}}}
+                }],{{/if}}
+                "query": {}
+            },
+            "response": {
+                "status": {{Response.Status}},
+                {{#if Response.Body}}"body": {{{toJSON Response.Body}}},
+                "encodedBody": false,{{/if}}
+                {{#if Response.Headers}}"headers": {{{toJSON Response.Headers}}},{{/if}}
+                "templated": false
+            }
+        }{{#unless @last}},
+        {{/unless}}{{/Interactions}}],
+        "globalActions": {
+            "delays": []
+        }
+    }
+}

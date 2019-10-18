@@ -1,0 +1,16 @@
+Feature: Provider '{{provider.name}}' responding to consumer '{{consumer.name}}'
+
+Background:
+  * configure cors = true
+
+{{#each interactions}}
+# {{description}} ({{{provider_state}}})
+Scenario: pathMatches('{{{request.path}}}') && methodIs('{{request.method}}') {{#each request.headers}}&& headerContains("{{@key}}": "{{this}}"){{/each}}{{#each request.body}} && request["{{@key}}"] == "{{{toJSON this}}}"{{/each}}
+{{#response.status}}  * def responseStatus = {{.}}{{/response.status}}
+{{#if response.body}}  * def response = {{{toJSON response.body}}}{{/if}}
+{{#if response.headers}}  * def responseHeaders = {{{toJSON response.headers}}}{{/if}}
+{{/each}}
+
+# No match found - default scenario is to return a 404
+Scenario:
+  * def responseStatus = 404

@@ -1,0 +1,20 @@
+provider.name: {{provider.name}}
+consumer.name: {{consumer.name}}
+
+interactions: {{interactions}}
+
+{{#each interactions as |i|}}
+Inside interaction
+description (state): {{i.description}} ({{i.providerState}})
+request: {{request.method}} {{request.path}}
+request.headers: {{{request.headers}}}
+request.body: {{request.body}}
+request.query: {{i.request.query}}
+response.status {{i.response.status}}
+response.headers: {{response.headers}}
+response.body: {{i.response.body}}
+{{/each}}
+
+metadata: {{JsonRender metadata}}
+metadata.pactSpecification: {{metadata.pactSpecification}}
+metadata.pactSpecification.version: {{metadata.pactSpecification.version}}

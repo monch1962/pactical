@@ -1,0 +1,22 @@
+import org.springframework.cloud.contract.spec.Contract
+
+{{#interactions}}
+Contract.make {
+  description "{{description}} ({{{provider_state}}})"
+
+  request {
+    url "{{request.path}}"
+    headers {{{toJSON request.headers}}}
+    method {{request.method}}
+  }
+
+  response {
+    status {{response.status}}
+    headers {{{toJSON response.headers}}}
+    body (
+      {{{toJSON response.body}}}
+    )
+  }
+}
+
+{{/interactions}}

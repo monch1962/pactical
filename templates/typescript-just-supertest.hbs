@@ -1,0 +1,22 @@
+// To execute this test, you'll need to first install any dependencies:
+// $ npm install jest supertest @types/jest @types/supertest ts-jest --save=dev
+
+import request from 'supertest';
+const app = require('../app'); // Node application to test
+
+describe('{{Consumer.name}} responding to {{Provider.Name}}', () => {
+{{#Interactions}}
+    it('{{{ProviderState}}}', async () => {
+        const httpRequest = request(app).{{lowerCase request.method}}({{request.url}});
+        httpRequest.send({{{toJSON request.body}}})
+        {{#each request.headers}}
+        httpRequest.set('{{@key}}', '{{this}}');
+        {{/each}}
+
+        const response = await {{lowerCase request.method}}('{{description}}')
+            .expect({{response.status}});
+        expect(response.body).toBe({{{toJSON Response.body}}})
+    });
+
+{{/Interactions}}
+})
