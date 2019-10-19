@@ -1,5 +1,5 @@
 extern crate serde_json;
-extern crate handlebars;
+#[macro_use] extern crate handlebars;
 extern crate serde;
 
 #[macro_use]
@@ -16,6 +16,13 @@ use std::io::prelude::*;
 use std::fs::File;
 use serde::{Serialize, Deserialize};
 use serde_json::Value as JsonValue;
+
+// extern crate serialize;
+// use serialize::json;
+
+extern crate chrono;
+use chrono::Local;
+
 
 #[derive(Serialize,Deserialize,Debug)]
 struct Consumer {
@@ -146,6 +153,20 @@ fn main() {
     handlebars.register_template_string("toJSON", (Option<serde_json::Value>))
         .to_string().ok().unwrap();
     */
+
+    // register all Handlebars helpers
+    handlebars_helper!(hex: |v: i64| format!("0x{:x}", v));
+    handlebars_helper!(lower: |s: str| s.to_lowercase());
+    handlebars_helper!(upper: |s: str| s.to_uppercase());
+    handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
+    // handlebars_helper!(toJSON: |json_str: Object as JSON| format!("{}", json_str));
+
+    handlebars.register_helper("hex", Box::new(hex));
+    handlebars.register_helper("lower", Box::new(lower));
+    handlebars.register_helper("upper", Box::new(upper));   
+    handlebars.register_helper("current_time", Box::new(current_time));
+    // handlebars.register_helper("toJSON", Box::new(toJSON));
+
 
     let result = handlebars.render_template(&t, &pact);
 

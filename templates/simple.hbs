@@ -15,6 +15,11 @@ response.headers: {{response.headers}}
 response.body: {{i.response.body}}
 {{/each}}
 
-metadata: {{JsonRender metadata}}
+metadata: {{metadata}}
 metadata.pactSpecification: {{metadata.pactSpecification}}
 metadata.pactSpecification.version: {{metadata.pactSpecification.version}}
+
+hex 16: {{hex 16}}
+current_time: {{current_time "%Y-%m-%dT%H:%M:%S"}}
+lower(ABC): {{lower "ABC"}}
+upper(abc): {{upper "abc"}}
