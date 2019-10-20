@@ -113,7 +113,7 @@ fn main() {
         .read_to_string(&mut pact_str)
         .expect("No Pact supplied to stdin");
     let res = serde_json::from_str(&pact_str);
-    if !res.is_ok() {
+    if res.is_err() {
         eprintln!("{:#?}", res);
         eprintln!("Couldn't parse Pact JSON :-(");
     }
@@ -125,7 +125,7 @@ fn main() {
 
     let template_filename = format!("./templates/{}.hbs", template);
     let res2 = File::open(template_filename);
-    if !res2.is_ok() {
+    if res2.is_err() {
         eprintln!("{:#?}", res2);
         eprintln!("Template file {} not found", template);
     }
@@ -142,7 +142,8 @@ fn main() {
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
     handlebars_helper!(toJSON: |json_str: object| format!("{:#?}", serde_json::to_string_pretty(&json_str).unwrap()) );
-    handlebars_helper!(envVar: |s: str| format!("{}", env::var(s).unwrap()));
+    // handlebars_helper!(envVar: |s: str| format!("{}", env::var(s).unwrap().to_string()));
+    handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
 
     handlebars.register_helper("hex", Box::new(hex));
     handlebars.register_helper("lower", Box::new(lower));
