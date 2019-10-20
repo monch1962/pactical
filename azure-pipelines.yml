@@ -20,5 +20,12 @@ steps:
   displayName: 'Install Rust'
 
 - script: |
+    cargo build
+    cargo build --release
+    ls -l target/debug
+    ls -l target/release
+  displayName: 'Build debug & release versions of the Rust app'
+
+- script: |
     cargo test
   displayName: 'Run unit tests'
