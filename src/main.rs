@@ -34,13 +34,6 @@ struct Provider {
     name: String
 }
 
-/*
-#[derive(Serialize,Deserialize,Debug)]
-struct PactVersion {
-    pact_version: String
-}
-*/
-
 #[derive(Serialize,Deserialize,Debug)]
 struct PactSpecification {
     version: String
@@ -75,7 +68,6 @@ struct Request {
 #[derive(Serialize,Deserialize,Debug)]
 struct Response {
     status: Option<u16>,
-    //headers: Vec<Header>,
     headers: Option<serde_json::Value>,
     body: Option<serde_json::Value>,
     generators: Option<serde_json::Value>,
@@ -118,9 +110,6 @@ fn main() {
     // Read from stdin into "pact_str"
     let mut pact_str = String::new();
     io::stdin().read_to_string(&mut pact_str).expect("No Pact supplied to stdin");
-
-    // let pact: serde_json::Value = serde_json::from_str(&pact_str).unwrap();
-    // println!("{:?}", serde_json::to_string(&pact).unwrap());
     let res = serde_json::from_str(&pact_str);
     if !res.is_ok() {
         eprintln!("{:#?}", res);
@@ -134,8 +123,6 @@ fn main() {
     let template = env::var("TEMPLATE").unwrap();
 
     let template_filename = format!("./templates/{}.hbs", template);
-    // eprintln!("{}", template_filename);
-    //let mut f = File::open(template_filename).unwrap();
     let res2 = File::open(template_filename);
     if !res2.is_ok() {
         eprintln!("{:#?}", res2);
@@ -145,14 +132,8 @@ fn main() {
 
     let mut t = String::new();
     f.read_to_string(&mut t);
-    // eprintln!("{}", t);
 
     let mut handlebars = Handlebars::new();
-
-    /*
-    handlebars.register_template_string("toJSON", (Option<serde_json::Value>))
-        .to_string().ok().unwrap();
-    */
 
     // register all Handlebars helpers
     handlebars_helper!(hex: |v: i64| format!("0x{:x}", v));
@@ -167,11 +148,8 @@ fn main() {
     handlebars.register_helper("current_time", Box::new(current_time));
     handlebars.register_helper("toJSON", Box::new(toJSON));
 
-
     let result = handlebars.render_template(&t, &pact);
 
     // Write template+pact to stdout
-    // eprintln!("{}", pact_str);
-    // eprintln!("{}", t);
     println!("{}", result.unwrap());
 }
