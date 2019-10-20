@@ -29,3 +29,8 @@ steps:
 - script: |
     cargo test
   displayName: 'Run unit tests'
+
+- script: |
+    rustup component add clippy
+    cargo clippy
+  displayName: 'Run clippy code quality tests'
