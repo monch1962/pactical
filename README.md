@@ -1,0 +1,1 @@
+[![Build Status](https://dev.azure.com/monch1962/monch1962/_apis/build/status/monch1962.pactical?branchName=master)](https://dev.azure.com/monch1962/monch1962/_build/latest?definitionId=8&branchName=master)
