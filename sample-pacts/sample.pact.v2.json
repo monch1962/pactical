@@ -1,0 +1,53 @@
+{
+    "consumer": {
+        "name": "billy"
+    },
+    "provider": {
+        "name": "bobby"
+    },
+    "interactions": [{
+            "description": "My test",
+            "providerState": "User billy exists",
+            "request": {
+                "method": "POST",
+                "path": "/users/login",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "username": "billy",
+                    "password": "issilly"
+                }
+            },
+            "response": {
+                "status": 200
+            }
+        },
+        {
+            "description": "My second test",
+            "providerState": "User herb doesn't exist",
+            "request": {
+                "method": "POST",
+                "path": "/users/login",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "username": "herb",
+                    "password": "hasleftthebuilding"
+                }
+            },
+            "response": {
+                "status": 401,
+                "body": {
+                    "status": "failed to login"
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "pactSpecification": {
+            "version": "2.0.0"
+        }
+    }
+}
