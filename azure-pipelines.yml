@@ -14,6 +14,11 @@ steps:
   displayName: 'Run a one-line script'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    curl https://sh.rustup.rs -sSf | sh
+    rustc --version
+    cargo --version
+  displayName: 'Install Rust'
+
+- script: |
+    cargo test
+  displayName: 'Run unit tests'
