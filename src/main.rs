@@ -142,12 +142,14 @@ fn main() {
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
     handlebars_helper!(toJSON: |json_str: object| format!("{:#?}", serde_json::to_string_pretty(&json_str).unwrap()) );
+    handlebars_helper!(envVar: |s: str| format!("{}", env::var(s).unwrap()));
 
     handlebars.register_helper("hex", Box::new(hex));
     handlebars.register_helper("lower", Box::new(lower));
     handlebars.register_helper("upper", Box::new(upper));
     handlebars.register_helper("current_time", Box::new(current_time));
     handlebars.register_helper("toJSON", Box::new(toJSON));
+    handlebars.register_helper("envVar", Box::new(envVar));
 
     let result = handlebars.render_template(&t, &pact);
 
