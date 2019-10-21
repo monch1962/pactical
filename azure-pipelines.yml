@@ -34,3 +34,8 @@ steps:
     rustup component add clippy
     cargo clippy
   displayName: 'Run clippy code quality tests'
+
+- script: |
+    docker build -t pactical .
+    cat sample-pacts/sample.pact.v2.json | docker run -e TEMPLATE=simple -i pactical:latest
+  displayName: 'Build Docker image and run a simple test to confirm it works'

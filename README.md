@@ -30,10 +30,10 @@ Run it, using a sample Pact and a simple template
 ## To build Docker image & run it
 
 Build the Docker image
-`$ docker build -t pactical`
+`$ docker build -t pactical .`
 
 Execute the Docker image, supplying a Pact and a template file (./templates/simple.hbs in this case)
+
 `$ cat sample-pacts/sample.pact.v2.json | docker run -e TEMPLATE=simple -i pactical:latest`
 
-Processed template will be written to stdout - this should allow you to build a CI-friendly workflow
 
