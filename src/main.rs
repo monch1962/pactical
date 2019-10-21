@@ -106,7 +106,57 @@ fn read_template_file(template_env_var: String) -> String {
 }
 */
 
-fn main() {
+
+fn read_template_file(template_env_var:String) -> String {
+    /// Read template file from the specified environment variable
+    /// and return the template as a string
+    let template = template_env_var;
+    println!("Template env var: {}", template);
+
+    let template_filename = format!("./templates/{}.hbs", template);
+    let res = File::open(template_filename);
+    if res.is_err() {
+        eprintln!("{:#?}", res);
+        eprintln!("Template file {} not found", template);
+    }
+    let mut f = res.unwrap();
+
+    let mut t = String::new();
+    f.read_to_string(&mut t).expect("Can't convert to a string");
+    t
+}
+
+fn register_handlebars() -> Handlebars {
+    /// This function creates a Handlebars instance, applies any helpers to it, then returns the instance
+    /// Expect helpers within this function to evolve over time as the need for new helpers emerges
+    /// 
+    /// Current helpers:
+    /// {{hex 16}} will render 0x10
+    /// {{lower "ABC"}} will render abc
+    /// {{upper "abc"}} will render ABC
+    /// {{current_time "%Y-%m-%dT%H:%M:%S"}} will render the current time in the specified format
+    /// {{toJSON json-content}} will render the JSON representation of json-content
+    /// {{envVar "ENV_VARIABLE"}} will render the value of the environment variable ENV_VARIABLE
+    let mut handlebars = Handlebars::new();
+
+    // register all Handlebars helpers
+    handlebars_helper!(hex: |v: i64| format!("0x{:x}", v));
+    handlebars_helper!(lower: |s: str| s.to_lowercase());
+    handlebars_helper!(upper: |s: str| s.to_uppercase());
+    handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
+    handlebars_helper!(toJSON: |json_str: object| format!("{:#?}", serde_json::to_string_pretty(&json_str).unwrap()) );
+    handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
+
+    handlebars.register_helper("hex", Box::new(hex));
+    handlebars.register_helper("lower", Box::new(lower));
+    handlebars.register_helper("upper", Box::new(upper));
+    handlebars.register_helper("current_time", Box::new(current_time));
+    handlebars.register_helper("toJSON", Box::new(toJSON));
+    handlebars.register_helper("envVar", Box::new(envVar));
+    handlebars
+}
+
+fn read_pact_from_stdin() -> Pact {
     // Read from stdin into "pact_str"
     let mut pact_str = String::new();
     io::stdin()
@@ -118,39 +168,16 @@ fn main() {
         eprintln!("Couldn't parse Pact JSON :-(");
     }
     let pact: Pact = res.unwrap();
+    pact
+}
+
+fn main() {
+    let pact: Pact = read_pact_from_stdin();
     eprintln!("The provider is {}", pact.provider.name);
 
-    // Read template from environment variable
-    let template = env::var("TEMPLATE").unwrap();
+    let t = read_template_file(env::var("TEMPLATE").unwrap());
 
-    let template_filename = format!("./templates/{}.hbs", template);
-    let res2 = File::open(template_filename);
-    if res2.is_err() {
-        eprintln!("{:#?}", res2);
-        eprintln!("Template file {} not found", template);
-    }
-    let mut f = res2.unwrap();
-
-    let mut t = String::new();
-    f.read_to_string(&mut t).expect("Can't convert to a string");
-
-    let mut handlebars = Handlebars::new();
-
-    // register all Handlebars helpers
-    handlebars_helper!(hex: |v: i64| format!("0x{:x}", v));
-    handlebars_helper!(lower: |s: str| s.to_lowercase());
-    handlebars_helper!(upper: |s: str| s.to_uppercase());
-    handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
-    handlebars_helper!(toJSON: |json_str: object| format!("{:#?}", serde_json::to_string_pretty(&json_str).unwrap()) );
-    // handlebars_helper!(envVar: |s: str| format!("{}", env::var(s).unwrap().to_string()));
-    handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
-
-    handlebars.register_helper("hex", Box::new(hex));
-    handlebars.register_helper("lower", Box::new(lower));
-    handlebars.register_helper("upper", Box::new(upper));
-    handlebars.register_helper("current_time", Box::new(current_time));
-    handlebars.register_helper("toJSON", Box::new(toJSON));
-    handlebars.register_helper("envVar", Box::new(envVar));
+    let handlebars = register_handlebars();
 
     let result = handlebars.render_template(&t, &pact);
 
