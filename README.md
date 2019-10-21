@@ -36,4 +36,4 @@ Execute the Docker image, supplying a Pact and a template file (./templates/simp
 
 `$ cat sample-pacts/sample.pact.v2.json | docker run -e TEMPLATE=simple -i pactical:latest`
 
-
+Note that, in use, you'd only build the Pactical Docker image once, then store it in a Docker registry where you can retrieve and use it on demand. The Dockerfile is designed to generate minimal Docker images (currently around 3.6Mb in size), so that storing and retrieving them from a Docker registry is as cheap and fast as possible.
