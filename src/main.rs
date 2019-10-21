@@ -90,23 +90,6 @@ struct Pact {
     metadata: Metadata,
 }
 
-/*
-fn read_template_file(template_env_var: String) -> String {
-    let template = template_env_var.unwrap();
-    let template_filename = format!("./templates/{}.hbs", template);
-    let res = File::open(template_filename);
-    if !res.is_ok() {
-        eprintln!("{:#?}", res);
-        eprintln!("Template file {} not found", template_filename);
-    }
-    let template_content = res.unwrap();
-    let mut t = String::new();
-    template_content.read_to_string(&mut t);
-    t
-}
-*/
-
-
 fn read_template_file(template_env_var:String) -> String {
     /// Read template file from the specified environment variable
     /// and return the template as a string
