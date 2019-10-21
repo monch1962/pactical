@@ -132,6 +132,8 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
     handlebars_helper!(toJSON: |json_str: object| format!("{:#?}", serde_json::to_string_pretty(&json_str).unwrap()) );
+    // handlebars_helper!(toJSON: |json_str: object| format!("{:#?}", serde_json::to_string(json_str)) );
+    // handlebars_helper!(toJSON: |json_str: object| format!("{:#?}", json::encode(json_str)));
     handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
     handlebars_helper!(capitalise: |s: str| s.to_title_case());
 
