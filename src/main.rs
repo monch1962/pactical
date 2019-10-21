@@ -182,11 +182,11 @@ fn main() {
 
     eprintln!("The provider is {}", pact.provider.name);
 
-    let t = read_template_file(env::var("TEMPLATE").unwrap());
+    let template = read_template_file(env::var("TEMPLATE").unwrap());
 
     let handlebars = register_handlebars();
 
-    let result = handlebars.render_template(&t, &pact);
+    let result = handlebars.render_template(&template, &pact);
 
     // Write template+pact to stdout
     println!("{}", result.unwrap());

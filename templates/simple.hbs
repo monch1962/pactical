@@ -15,7 +15,7 @@ response.headers: {{response.headers}}
 response.body: {{i.response.body}}
 {{/each}}
 
-metadata: {{metadata}}
+metadata: {{toJSON metadata}}
 metadata.pactSpecification: {{toJSON metadata.pactSpecification}}
 metadata.pactSpecification.version: {{metadata.pactSpecification.version}}
 
