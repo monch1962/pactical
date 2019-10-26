@@ -7,7 +7,7 @@ interactions: {{interactions}}
 Inside interaction
 description (state): {{i.description}} ({{i.providerState}})
 request: {{request.method}} {{request.path}}
-request.headers: {{{request.headers}}}
+request.headers: {{toJSON i.request.headers}}
 request.body: {{request.body}}
 request.query: {{i.request.query}}
 response.status {{i.response.status}}

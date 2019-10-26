@@ -93,7 +93,7 @@ struct Pact {
     metadata: Metadata,
 }
 
-fn read_template_file(template_env_var:String) -> String {
+fn read_template_file(template_env_var: String) -> String {
     /// Read template file from the specified environment variable
     /// and return the template as a string
     let template = template_env_var;
@@ -115,7 +115,7 @@ fn read_template_file(template_env_var:String) -> String {
 fn register_handlebars() -> Handlebars {
     /// This function creates a Handlebars instance, applies any helpers to it, then returns the instance
     /// Expect helpers within this function to evolve over time as the need for new helpers emerges
-    /// 
+    ///
     /// Current helpers:
     /// {{hex 16}} will render 0x10
     /// {{lower "ABC"}} will render abc
@@ -132,11 +132,11 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
     // handlebars_helper!(toJSON: |json_obj: object| format!("{:#?}", serde_json::to_string_pretty(&json_obj).unwrap()) );
-    handlebars_helper!(toJSON: |json_obj_or_none: str| 
+    handlebars_helper!(toJSON: |json_obj_or_none: object|
     if json_obj_or_none.is_empty() {
         "{}".into()
     } else {
-        let s = serde_json::to_string_pretty(&json_obj_or_none).is_ok().to_string();
+        let s = serde_json::to_string_pretty(&json_obj_or_none).unwrap();
         s
     });
     handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
