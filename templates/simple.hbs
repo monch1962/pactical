@@ -1,5 +1,7 @@
+provider: {{toJSON provider}}
 provider.name: {{provider.name}}
-consumer.name: {{upper consumer.name}}
+consumer: {{toJSON consumer}}
+consumer.name: "{{upper consumer.name}}"
 
 interactions: {{interactions}}
 
@@ -8,7 +10,7 @@ Inside interaction
 description (state): {{i.description}} ({{i.providerState}})
 request: {{request.method}} {{request.path}}
 request.headers: {{toJSON i.request.headers}}
-request.body: {{request.body}}
+request.body: {{toJSON request.body}}
 request.query: {{i.request.query}}
 response.status {{i.response.status}}
 response.headers: {{response.headers}}
