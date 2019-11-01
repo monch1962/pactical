@@ -140,7 +140,7 @@ fn register_handlebars() -> Handlebars {
     if json_obj_or_none.is_empty() {
         "{}".into()
     } else {
-        let s = serde_json::to_string_pretty(&json_obj_or_none).unwrap();
+        let s = serde_json::to_string_pretty(&json_obj_or_none).unwrap_or("{}".to_string());
         s
     });
     handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
@@ -200,5 +200,6 @@ fn main() {
     let result = handlebars.render_template(&template, &pact);
 
     // Write template+pact to stdout
-    println!("{}", result.unwrap());
+    eprintln!("{:#?}", result);
+    println!("{}", result.unwrap_or("Found a problem".to_string()));
 }

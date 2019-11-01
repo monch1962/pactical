@@ -10,8 +10,8 @@ Inside interaction
 description (state): {{i.description}} ({{i.providerState}})
 request: {{request.method}} {{request.path}}
 request.headers: {{toJSON i.request.headers}}
-request.body: {{toJSON request.body}}
-request.query: {{i.request.query}}
+request.body: {{toJSON i.request.body}}
+request.query: {{toJSON i.request.query}}
 response.status {{i.response.status}}
 response.headers: {{response.headers}}
 response.body: {{i.response.body}}
@@ -21,6 +21,7 @@ metadata: {{toJSON metadata}}
 metadata.pactSpecification: {{toJSON metadata.pactSpecification}}
 metadata.pactSpecification.version: {{metadata.pactSpecification.version}}
 
+Some miscellaneous Handlebars helpers...
 hex 16: {{hex 16}}
 current_time: {{current_time "%Y-%m-%dT%H:%M:%S"}}
 lower(ABC): {{lower "ABC"}}
