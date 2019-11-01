@@ -25,15 +25,15 @@
                 }],
                 {{#if i.request.body}}"body": [{ 
                     "matcher": "exact",
-                    "value": {{{toJSON i.request.body}}}
+                    "value": {{toJSON i.request.body}}
                 }],{{/if}}
                 "query": {}
             },
             "response": {
                 "status": {{i.response.status}},
-                {{#if i.response.body}}"body": {{{toJSON i.response.body}}},
+                {{#if i.response.body}}"body": {{toJSON i.response.body}}},
                 "encodedBody": false,{{/if}}
-                {{#if i.response.headers}}"headers": {{{toJSON i.response.headers}}},{{/if}}
+                {{#if i.response.headers}}"headers": {{toJSON i.response.headers}},{{/if}}
                 "templated": false
             }
         }{{#unless @last}},
