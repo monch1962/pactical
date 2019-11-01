@@ -1,13 +1,13 @@
-Feature: Consumer '{{Consumer.Name}}' sending requests to provider '{{Provider.Name}}'
+Feature: Consumer '{{consumer.name}}' sending requests to provider '{{provider.name}}'
 
-{{#Interactions}}
-  Scenario: {{Description}} ({{{ProviderState}}})
-    Given URL '{{{Request.Path}}}'
-    And request {{{toJSON Request.Body}}}
-    {{#Request.Headers}}* def reqHeaders = { {{#each this}}"{{@key}}":"{{this}}" {{#unless @last}}, {{/unless}}{{/each}} }
-    * headers reqHeaders{{/Request.Headers}}
-    When method {{Request.Method}}
-    {{#Response.Status}}Then status {{.}}{{/Response.Status}}
-    {{#if Response.Body}}And match response == {{{toJSON Response.Body}}}{{/if}}
+{{#each interactions as |i|}}
+  Scenario: {{description}} ({{i.providerState}})
+    Given URL '{{request.path}}'
+    {{#if i.request.body}}And request {{toJSON i.request.body}}{{/if}}
+    {{#if request.headers}}* def reqHeaders = { {{#each request.headers}}"{{@key}}":"{{this}}" {{#unless @last}}, {{/unless}}{{/each}} }
+    * headers reqHeaders{{/if}}
+    When method {{request.method}}
+    {{#if response.status}}Then status {{response.status}}{{/if}}
+    {{#if response.body}}And match response == {{toJSON response.body}}{{/if}}
 
-{{/Interactions}}
+{{/each}}
