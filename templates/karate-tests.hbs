@@ -1,7 +1,7 @@
 Feature: Consumer '{{consumer.name}}' sending requests to provider '{{provider.name}}'
 
 {{#each interactions as |i|}}
-  Scenario: {{description}} ({{{providerState}}})
+  Scenario: {{description}} ({{i.providerState}})
     Given URL '{{request.path}}'
     {{#if i.request.body}}And request {{toJSON i.request.body}}{{/if}}
     {{#if request.headers}}* def reqHeaders = { {{#each request.headers}}"{{@key}}":"{{this}}" {{#unless @last}}, {{/unless}}{{/each}} }
