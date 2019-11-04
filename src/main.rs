@@ -1,3 +1,13 @@
+//! This tool processes Pact contracts into ... well, just about anything!
+//! The intended use case is to take a Pact contract and convert it into executable test cases 
+//! (i.e. to test the provider) and/or executable stubs (i.e. provider mocks, to test a consumer against the mock)
+//! 
+//! Everything is done using Handlebars templates. Handlebars is a generic templating language, often used for generating
+//! HTML content but useful for a broad range of tasks
+//! 
+//! Absolutely no limitations on what can be done with this approach. Some other "left field" ideas would include:
+//! - generate PDF documentation of Pact coverage for human viewing &/or approval
+//! 
 extern crate serde_json;
 #[macro_use]
 extern crate handlebars;
@@ -17,6 +27,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
+use std::process;
 
 // extern crate serialize;
 // use serialize::json;
@@ -97,9 +108,9 @@ struct Pact {
     metadata: Metadata,
 }
 
+/// Read template file from the specified environment variable
+/// and return the template as a string
 fn read_template_file(template_env_var: String) -> String {
-    // Read template file from the specified environment variable
-    // and return the template as a string
     let template = template_env_var;
     println!("Template env var: {}", template);
 
@@ -108,6 +119,7 @@ fn read_template_file(template_env_var: String) -> String {
     if res.is_err() {
         eprintln!("{:#?}", res);
         eprintln!("Template file {} not found", template);
+        process::exit(101);
     }
     let mut f = res.unwrap();
 
@@ -116,18 +128,19 @@ fn read_template_file(template_env_var: String) -> String {
     t
 }
 
+/// This function creates a Handlebars instance, applies any helpers to it, then returns the instance
+/// Expect helpers within this function to evolve over time as the need for new helpers emerges
+///
+/// Current helpers:
+/// {{hex 16}} will render 0x10
+/// {{lower "ABC"}} will render abc
+/// {{upper "abc"}} will render ABC
+/// {{current_time "%Y-%m-%dT%H:%M:%S"}} will render the current time in the specified format
+/// {{toJSON json-content}} will render the JSON representation of json-content
+/// {{envVar "ENV_VARIABLE"}} will render the value of the environment variable ENV_VARIABLE
+/// {{capitalise "abc def"}} will render Abc Def (i.e. make the first letter in every word a capital letter)
 fn register_handlebars() -> Handlebars {
-    // This function creates a Handlebars instance, applies any helpers to it, then returns the instance
-    // Expect helpers within this function to evolve over time as the need for new helpers emerges
-    //
-    // Current helpers:
-    // {{hex 16}} will render 0x10
-    // {{lower "ABC"}} will render abc
-    // {{upper "abc"}} will render ABC
-    // {{current_time "%Y-%m-%dT%H:%M:%S"}} will render the current time in the specified format
-    // {{toJSON json-content}} will render the JSON representation of json-content
-    // {{envVar "ENV_VARIABLE"}} will render the value of the environment variable ENV_VARIABLE
-    // {{capitalise "abc def"}} will render Abc Def (i.e. make the first letter in every word a capital letter)
+
     let mut handlebars = Handlebars::new();
 
     // register all Handlebars helpers
@@ -156,8 +169,9 @@ fn register_handlebars() -> Handlebars {
     handlebars
 }
 
+/// Read from stdin into "pact_str"
+/// TODO: Generalise this to read from any file-like interface
 fn read_pact_from_stdin() -> Pact {
-    // Read from stdin into "pact_str"
     let mut pact_str = String::new();
     io::stdin()
         .read_to_string(&mut pact_str)
@@ -166,6 +180,7 @@ fn read_pact_from_stdin() -> Pact {
     if res.is_err() {
         eprintln!("{:#?}", res);
         eprintln!("Couldn't parse Pact JSON :-(");
+        process::exit(102);
     }
     let pact: Pact = res.unwrap();
     pact
@@ -201,5 +216,7 @@ fn main() {
 
     // Write template+pact to stdout
     eprintln!("{:#?}", result);
-    println!("{}", result.unwrap_or_else(|_| "Found a problem".to_string()));
+    println!("{}", result.unwrap_or_else(|_| {
+        eprintln!("Found a problem");
+        process::exit(103)}));
 }
