@@ -120,7 +120,8 @@ struct Interaction {
     provider_state: Option<serde_json::Value>,
     request: Option<Request>,
     response: Option<Response>,
-    messages: Option<Messages>
+    messages: Option<Messages>,
+    tags: Option<Vec<String>>,  // Added this non-standard extension to Pact to let me select subsets of contracts to execute
 }
 
 #[derive(Serialize, Deserialize, Debug)]
