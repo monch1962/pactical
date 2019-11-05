@@ -72,6 +72,20 @@ struct HeaderString {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+struct Message {
+    description: String,
+    provider_state: String,
+    contents: String,
+    meta_data: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Messages {
+    message: Vec<Option<Message>>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 struct Request {
     method: String,
     path: String,
@@ -79,6 +93,7 @@ struct Request {
     query: Option<serde_json::Value>,
     body: Option<serde_json::Value>,
     matching_rules: Option<serde_json::Value>,
+    generators: Option<serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -96,8 +111,9 @@ struct Response {
 struct Interaction {
     description: String,
     provider_state: Option<serde_json::Value>,
-    request: Request,
-    response: Response,
+    request: Option<Request>,
+    response: Option<Response>,
+    messages: Option<Messages>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
