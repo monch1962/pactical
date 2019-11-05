@@ -38,6 +38,13 @@ use chrono::Local;
 extern crate inflector;
 use inflector::Inflector;
 
+extern crate rand;
+use rand::Rng;
+
+extern crate rand_regex;
+extern crate regex_syntax;
+extern crate regex;
+
 #[derive(Serialize, Deserialize, Debug)]
 struct Consumer {
     name: String,
@@ -144,6 +151,137 @@ fn read_template_file(template_env_var: String) -> String {
     t
 }
 
+/// Return a random integer, between 'min' and 'max'
+fn random_int(min: u32, max: u32)  -> String {
+    let mut rng = rand::thread_rng();
+    let r = rng.gen_range(min, max);
+    eprintln!("Integer: {}", r);
+    // println!("Float: {}", rng.gen_range(0.0, 10.0));
+    r.to_string()
+}
+
+#[test]
+fn random_int_working() {
+    const MIN:u32 = 47;
+    const MAX:u32 = 193;
+    let r = random_int(MIN, MAX);
+    assert!(r.parse::<u32>().unwrap() >= MIN);
+    assert!(r.parse::<u32>().unwrap() < MAX);
+}
+
+/// Return a random decimal number, of length 'digits'
+fn random_decimal(digits: u8) -> String {
+    const CHARSET: &[u8] = b"0123456789";
+    let mut rng = rand::thread_rng();
+
+    let r: String = (0..digits)
+        .map(|_| {
+            let idx = rng.gen_range(0, CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect();
+
+    eprintln!("{:?}", r);    
+    r
+}
+
+#[test]
+fn random_decimal_working() {
+    let r = random_decimal(5);
+    assert!(r.parse::<u32>().unwrap() >= 0);
+    assert!(r.parse::<u32>().unwrap() < 99999);
+}
+
+/// Return a random hexadecimal number, of length 'digits'
+fn random_hexadecimal(digits: u8) -> String {
+    const CHARSET: &[u8] = b"0123456789abcdef";
+    let mut rng = rand::thread_rng();
+
+    let r: String = (0..digits)
+        .map(|_| {
+            let idx = rng.gen_range(0, CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect();
+
+    eprintln!("{:?}", r);    
+    r
+}
+
+#[test]
+fn random_hexadecimal_working() {
+    use regex::Regex;
+    let re = Regex::new(r"^[0-9a-f]{4}$").unwrap();
+    let r = random_hexadecimal(4);
+    assert!(re.is_match(&r));
+}
+
+/// Return a random string that conforms to the supplied regex pattern
+fn random_regex(pattern: String) -> rand_regex::Regex {
+    let utf8_hir = regex_syntax::ParserBuilder::new()
+        .unicode(false)
+        .allow_invalid_utf8(true)
+        .build()
+        .parse(&pattern)
+        .unwrap();
+    let utf8_gen = rand_regex::Regex::with_hir(utf8_hir, 100).unwrap();
+    utf8_gen
+}
+
+/// Return a random UIID
+fn random_uuid() -> String {
+    format!("{}-{}-{}-{}-{}",random_hexadecimal(8), random_hexadecimal(4), random_hexadecimal(4),
+        random_hexadecimal(4), random_hexadecimal(12))
+}
+
+#[test]
+fn random_uuid_working() {
+    use regex::Regex;
+    let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
+    let r = random_uuid();
+    assert!(re.is_match(&r));
+}
+
+/// Return a random string, of size 'size'
+fn random_string(size: u8) -> String {
+    const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                            abcdefghijklmnopqrstuvwxyz\
+                            0123456789)(*&^%$#@!~";
+    let mut rng = rand::thread_rng();
+
+    let r: String = (0..size)
+        .map(|_| {
+            let idx = rng.gen_range(0, CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect();
+
+    eprintln!("{:?}", r);    
+    r
+}
+
+#[test]
+fn random_string_working() {
+    use regex::Regex;
+    let re = Regex::new(r"^.{12}$").unwrap();
+    let r = random_string(12);
+    assert!(re.is_match(&r));
+}
+
+/// Return a random boolean
+fn random_boolean() -> String {
+    let mut rng = rand::thread_rng();
+    let r = rng.gen::<bool>();
+    eprintln!("Boolean: {}", r);
+    r.to_string()
+}
+
+#[test]
+fn random_boolean_working() {
+    let r = random_boolean();
+    assert!(r == "true" || r == "false");
+}
+
 /// This function creates a Handlebars instance, applies any helpers to it, then returns the instance
 /// Expect helpers within this function to evolve over time as the need for new helpers emerges
 ///
@@ -164,7 +302,8 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(lower: |s: str| s.to_lowercase());
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
-    // handlebars_helper!(toJSON: |json_obj: object| format!("{:#?}", serde_json::to_string_pretty(&json_obj).unwrap()) );
+    // handlebars_helper!(random_decimal: |num_digits: str| random_digits(num_digits.parse::<i8>().unwrap()));
+    // handlebars_helper!(random_int: |min: i32, max: i32| format!("{}", rand::thread_rng().gen_range(min, max)));
     handlebars_helper!(toJSON: |json_obj_or_none: object|
     if json_obj_or_none.is_empty() {
         "{}".into()
@@ -179,6 +318,7 @@ fn register_handlebars() -> Handlebars {
     handlebars.register_helper("lower", Box::new(lower));
     handlebars.register_helper("upper", Box::new(upper));
     handlebars.register_helper("current_time", Box::new(current_time));
+    // handlebars.register_helper("random_decimal", Box::new(random_decimal));
     handlebars.register_helper("toJSON", Box::new(toJSON));
     handlebars.register_helper("envVar", Box::new(envVar));
     handlebars.register_helper("capitalise", Box::new(capitalise));
