@@ -164,11 +164,11 @@ fn random_int(min: u64, max: u64)  -> String {
 
 #[test]
 fn random_int_working() {
-    const MIN:u32 = 47;
-    const MAX:u32 = 193;
+    const MIN:u64 = 47;
+    const MAX:u64 = 193;
     let r = random_int(MIN, MAX);
-    assert!(r.parse::<u32>().unwrap() >= MIN);
-    assert!(r.parse::<u32>().unwrap() < MAX);
+    assert!(r.parse::<u64>().unwrap() >= MIN);
+    assert!(r.parse::<u64>().unwrap() < MAX);
 }
 
 /// Return a random decimal number, of length 'digits'
@@ -190,8 +190,8 @@ fn random_decimal(digits: u64) -> String {
 #[test]
 fn random_decimal_working() {
     let r = random_decimal(5);
-    assert!(r.parse::<u32>().unwrap() >= 0);
-    assert!(r.parse::<u32>().unwrap() < 99999);
+    assert!(r.parse::<u64>().unwrap() >= 0);
+    assert!(r.parse::<u64>().unwrap() < 99999);
 }
 
 /// Return a random hexadecimal number, of length 'digits'
@@ -219,7 +219,7 @@ fn random_hexadecimal_working() {
 }
 
 /// Return a random string that conforms to the supplied regex pattern
-fn random_regex(pattern: String) -> rand_regex::Regex {
+fn random_regex(pattern: String) -> String {
     let utf8_hir = regex_syntax::ParserBuilder::new()
         .unicode(false)
         .allow_invalid_utf8(true)
@@ -227,7 +227,7 @@ fn random_regex(pattern: String) -> rand_regex::Regex {
         .parse(&pattern)
         .unwrap();
     let utf8_gen = rand_regex::Regex::with_hir(utf8_hir, 100).unwrap();
-    utf8_gen
+    format!("{:?}", utf8_gen)
 }
 
 /// Return a random UIID
@@ -328,7 +328,7 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(rand_decimal: |digits: u64| random_decimal(digits));
     handlebars_helper!(rand_int: |min: u64, max: u64| random_int(min, max));
     handlebars_helper!(rand_hexadecimal: |num_digits: u64| random_hexadecimal(num_digits));
-    // handlebars_helper!(rand_regex: |r: str| random_regex(r.to_string()));
+    handlebars_helper!(rand_regex: |r: str| random_regex(r.to_string()));
     handlebars_helper!(rand_string: |chars: u64| format!("{}", random_string(chars)));
 
     handlebars_helper!(toJSON: |json_obj_or_none: object|
@@ -348,7 +348,7 @@ fn register_handlebars() -> Handlebars {
     handlebars.register_helper("random_decimal", Box::new(rand_decimal));
     handlebars.register_helper("random_integer", Box::new(rand_int));
     handlebars.register_helper("random_hexadecimal", Box::new(rand_hexadecimal));
-    // handlebars.register_helper("random_regex", Box::new(rand_regex));
+    handlebars.register_helper("random_regex", Box::new(rand_regex));
     handlebars.register_helper("random_uuid", Box::new(random_uuid_helper));
     handlebars.register_helper("random_string", Box::new(rand_string));
     handlebars.register_helper("random_boolean", Box::new(random_boolean_helper));
