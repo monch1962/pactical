@@ -13,6 +13,27 @@ Templates are stored under the `./templates` directory. The templates stored the
 
 That said, the default set of templates should be usable as is for a reasonable subset of projects...
 
+## Helpers
+
+There are a number of helper functions, designed to make it easier to generate and manipulate data within your templates. It's intended that these templates will be extended and enhanced over time, as different use cases get fleshed out.
+
+Current helpers include:
+- hex (generate the hexadecimal equivalent of a decimal integer)
+- current_time (return the current time, with broad support for different formats)
+- lower (return the lowercase version of some text)
+- upper (return the uppercase version of some text)
+- capitalise (capitalise the first letter in each word in a set of text)
+- envVar (return the value of an environment variable)
+- random_decimal (return a random decimal number of the requested number of digits)
+- random_integer (return a random integer between a lower and upper bound)
+- random_hexadecimal (return a random hexadecimal number of the requested number of digits)
+- random_uuid (return a random UUID value)
+- random_string (return a random string of the requested number of characters)
+- random_boolean (return a random "true" or "false")
+- lorum_text (return Latin text of the specified number of words; useful for generating random text content)
+- lorum_title (return a Latin title; useful for generating random text title content)
+- random_regex (return a string that conforms to the supplied regex)
+
 ## To build locally
 
 Ensure you have a working Rust development environment
