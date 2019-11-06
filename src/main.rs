@@ -303,8 +303,15 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(lower: |s: str| s.to_lowercase());
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
-    // handlebars_helper!(random_decimal: |num_digits: str| random_digits(num_digits.parse::<i8>().unwrap()));
-    // handlebars_helper!(random_int: |min: i32, max: i32| format!("{}", rand::thread_rng().gen_range(min, max)));
+    handlebars_helper!(rand_decimal: |num_digits: str| random_decimal(num_digits.parse::<u8>().unwrap()));
+    handlebars_helper!(rand_int: |min: str, max: str| random_int(min.parse::<u32>().unwrap(), max.parse::<u32>().unwrap()));
+    handlebars_helper!(rand_hexadecimal: |num_digits: str| random_hexadecimal(num_digits.parse::<u8>().unwrap()));
+    // handlebars_helper!(rand_regex: ...);
+    // handlebars_helper!(rand_uuid: random_uuid());
+    // handlebars_helper!(rand_uuid: random_string());
+    // handlebars_helper!(rand_uuid: random_boolean());
+
+
     handlebars_helper!(toJSON: |json_obj_or_none: object|
     if json_obj_or_none.is_empty() {
         "{}".into()
@@ -319,7 +326,13 @@ fn register_handlebars() -> Handlebars {
     handlebars.register_helper("lower", Box::new(lower));
     handlebars.register_helper("upper", Box::new(upper));
     handlebars.register_helper("current_time", Box::new(current_time));
-    // handlebars.register_helper("random_decimal", Box::new(random_decimal));
+    handlebars.register_helper("random_decimal", Box::new(rand_decimal));
+    handlebars.register_helper("random_integer", Box::new(rand_int));
+    handlebars.register_helper("random_hexadecimal", Box::new(rand_hexadecimal));
+    // handlebars.register_helper("random_regex", Box::new(rand_regex))
+    // handlebars.register_helper("random_uuid", Box::new(rand_uuid);
+    // handlebars.register_helper("random_string", Box::new(rand_string);
+    // handlebars.register_helper("random_boolean", Box::new(rand_boolean);
     handlebars.register_helper("toJSON", Box::new(toJSON));
     handlebars.register_helper("envVar", Box::new(envVar));
     handlebars.register_helper("capitalise", Box::new(capitalise));
