@@ -405,7 +405,7 @@ fn main() {
     );
 }
 
-mod test {
+mod unittests {
     use super::*;
 
     #[test]
