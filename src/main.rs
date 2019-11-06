@@ -16,7 +16,8 @@ extern crate serde;
 // #[macro_use]
 extern crate serde_derive;
 
-use handlebars::Handlebars;
+use handlebars::{Handlebars, Context, Helper, RenderContext, HelperResult, Output};
+
 // use serde_json::json;
 // use std::fs;
 // use std::io::{self, Read};
@@ -283,6 +284,27 @@ fn random_boolean_working() {
     assert!(r == "true" || r == "false");
 }
 
+fn random_boolean_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+    let result = format!("{}", random_boolean());
+    out.write(result.as_ref())?;
+    Ok(())
+}
+
+fn random_uuid_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+    let result = format!("{}", random_uuid());
+    out.write(result.as_ref())?;
+    Ok(())
+}
+
+/*
+fn random_string_helper(h: &Helper, _: &Handlebars, _: &Context, rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+    let param = h.param(0).unwrap();
+    let result = format!("{}", random_string(*param.value().render().as_ref()));
+    out.write(result.as_ref())?;
+    Ok(())
+}
+*/
+
 /// This function creates a Handlebars instance, applies any helpers to it, then returns the instance
 /// Expect helpers within this function to evolve over time as the need for new helpers emerges
 ///
@@ -304,13 +326,12 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
     handlebars_helper!(rand_decimal: |num_digits: str| random_decimal(num_digits.parse::<u8>().unwrap()));
+    //handlebars_helper!(rand_decimal: |digits: u8| random_decimal(digits));
+    
     handlebars_helper!(rand_int: |min: str, max: str| random_int(min.parse::<u32>().unwrap(), max.parse::<u32>().unwrap()));
     handlebars_helper!(rand_hexadecimal: |num_digits: str| random_hexadecimal(num_digits.parse::<u8>().unwrap()));
     // handlebars_helper!(rand_regex: ...);
-    // handlebars_helper!(rand_uuid: random_uuid());
-    // handlebars_helper!(rand_uuid: random_string());
-    // handlebars_helper!(rand_uuid: random_boolean());
-
+    handlebars_helper!(rand_string: |chars: str| format!("{}", random_string(chars.parse::<u8>().unwrap())));
 
     handlebars_helper!(toJSON: |json_obj_or_none: object|
     if json_obj_or_none.is_empty() {
@@ -330,9 +351,9 @@ fn register_handlebars() -> Handlebars {
     handlebars.register_helper("random_integer", Box::new(rand_int));
     handlebars.register_helper("random_hexadecimal", Box::new(rand_hexadecimal));
     // handlebars.register_helper("random_regex", Box::new(rand_regex))
-    // handlebars.register_helper("random_uuid", Box::new(rand_uuid);
-    // handlebars.register_helper("random_string", Box::new(rand_string);
-    // handlebars.register_helper("random_boolean", Box::new(rand_boolean);
+    handlebars.register_helper("random_uuid", Box::new(random_uuid_helper));
+    handlebars.register_helper("random_string", Box::new(rand_string));
+    handlebars.register_helper("random_boolean", Box::new(random_boolean_helper));
     handlebars.register_helper("toJSON", Box::new(toJSON));
     handlebars.register_helper("envVar", Box::new(envVar));
     handlebars.register_helper("capitalise", Box::new(capitalise));

@@ -27,14 +27,17 @@ metadata.pactSpecification.version: {{metadata.pactSpecification.version}}
 Some miscellaneous Handlebars helpers...
 hex 16: {{hex 16}}
 current_time: {{current_time "%Y-%m-%dT%H:%M:%S"}}
+current_date (ISO format): {{current_time "%Y-%m-%d"}}
+current_date (US format): {{current_time "%m-%d-%Y"}}
+current_date (Aus format, 2 digit year): {{current_time "%d-%m-%y"}}
 lower(ABC): {{lower "ABC"}}
 upper(abc): {{upper "abc"}}
 capitalise(abc def): {{capitalise "abc def"}}
-envvar("TEMPLATE"): {{envVar "TEMPLATE"}}
+What's the value of the TEMPLATE environment variable?: {{envVar "TEMPLATE"}}
 random 5 digit decimal: {{random_decimal "5"}}
 random integer between 34 and 56: {{random_integer "34" "56"}}
 random 13 digit hexadecimal: {{random_hexadecimal "13"}}
 random regex: {{random_regex}}
 random UUID: {{random_uuid}}
-random string: {{random_string}}
+random 14 character string: {{random_string "14"}}
 random boolean: {{random_boolean}}
