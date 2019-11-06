@@ -13,6 +13,11 @@ extern crate serde_json;
 extern crate handlebars;
 extern crate serde;
 
+extern crate lipsum;
+use lipsum::{lipsum, lipsum_title};
+
+use std::convert::TryInto;
+
 // #[macro_use]
 extern crate serde_derive;
 
@@ -21,7 +26,7 @@ use handlebars::{Handlebars, Context, Helper, RenderContext, HelperResult, Outpu
 // use serde_json::json;
 // use std::fs;
 // use std::io::{self, Read};
-use std::env;
+use std::{env,fs};
 
 use serde::{Deserialize, Serialize};
 // use serde_json::Value as JsonValue;
@@ -290,6 +295,17 @@ fn random_boolean_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut Ren
     Ok(())
 }
 
+fn lorum_text_helper(words: i64) -> String {
+    let text = lipsum(words.try_into().unwrap());
+    text
+}
+
+fn lorum_title_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+    let result = format!("{}", lipsum_title());
+    out.write(result.as_ref())?;
+    Ok(())
+}
+
 fn random_uuid_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
     let result = format!("{}", random_uuid());
     out.write(result.as_ref())?;
@@ -340,6 +356,7 @@ fn register_handlebars() -> Handlebars {
     });
     handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
     handlebars_helper!(capitalise: |s: str| s.to_title_case());
+    handlebars_helper!(lorum_text: |words: i64| lorum_text_helper(words));
 
     handlebars.register_helper("hex", Box::new(hex));
     handlebars.register_helper("lower", Box::new(lower));
@@ -355,6 +372,8 @@ fn register_handlebars() -> Handlebars {
     handlebars.register_helper("toJSON", Box::new(toJSON));
     handlebars.register_helper("envVar", Box::new(envVar));
     handlebars.register_helper("capitalise", Box::new(capitalise));
+    handlebars.register_helper("lorum_text", Box::new(lorum_text));
+    handlebars.register_helper("lorum_title", Box::new(lorum_title_helper));
     handlebars
 }
 
@@ -375,13 +394,11 @@ fn read_pact_from_stdin() -> Pact {
     pact
 }
 
-/*
-fn read_pact(file: Option<File>) -> Pact {
-    // Read from stdin into "pact_str"
-    let mut pact_str = String::new();
-    file
-        .read_to_string(&mut pact_str)
-        .expect("No Pact supplied to stdin");
+/// read_pact reads a Pact contract from a filename
+/// and returns the Pact as a Pact
+fn read_pact(filename: String) -> Pact {
+    let pact_str = fs::read_to_string(filename)
+        .expect("No Pact supplied in filename",);
     let res = serde_json::from_str(&pact_str);
     if res.is_err() {
         eprintln!("{:#?}", res);
@@ -390,10 +407,11 @@ fn read_pact(file: Option<File>) -> Pact {
     let pact: Pact = res.unwrap();
     pact
 }
-*/
+
+
 fn main() {
     let pact: Pact = read_pact_from_stdin();
-    // let pact: Pact = read_pact(io::stdin());
+    // let pact: Pact = read_pact(Stdin);
 
     eprintln!("The provider is {}", pact.provider.name);
 

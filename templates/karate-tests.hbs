@@ -3,7 +3,10 @@ Feature: Consumer '{{consumer.name}}' sending requests to provider '{{provider.n
 {{#each interactions as |i|}}
   Scenario: {{description}} ({{i.providerState}})
     Given URL '{{request.path}}'
-    {{#if i.request.body}}And request {{toJSON i.request.body}}{{/if}}
+    {{#if i.request.body}}And request 
+    """
+    {{toJSON i.request.body}}
+    """{{/if}}
     {{#if request.headers}}* def reqHeaders = { {{#each request.headers}}"{{@key}}":"{{this}}" {{#unless @last}}, {{/unless}}{{/each}} }
     * headers reqHeaders{{/if}}
     When method {{request.method}}
