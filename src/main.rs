@@ -195,7 +195,7 @@ fn random_decimal(digits: u64) -> String {
 #[test]
 fn random_decimal_working() {
     let r = random_decimal(5);
-    assert!(r.parse::<u64>().unwrap() >= 0);
+    // assert!(r.parse::<u64>().unwrap() >= 0);
     assert!(r.parse::<u64>().unwrap() < 99999);
 }
 
