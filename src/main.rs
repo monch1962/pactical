@@ -154,7 +154,7 @@ fn read_template_file(template_env_var: String) -> String {
 }
 
 /// Return a random integer, between 'min' and 'max'
-fn random_int(min: u32, max: u32)  -> String {
+fn random_int(min: u64, max: u64)  -> String {
     let mut rng = rand::thread_rng();
     let r = rng.gen_range(min, max);
     eprintln!("Integer: {}", r);
@@ -172,7 +172,7 @@ fn random_int_working() {
 }
 
 /// Return a random decimal number, of length 'digits'
-fn random_decimal(digits: u8) -> String {
+fn random_decimal(digits: u64) -> String {
     const CHARSET: &[u8] = b"0123456789";
     let mut rng = rand::thread_rng();
 
@@ -195,7 +195,7 @@ fn random_decimal_working() {
 }
 
 /// Return a random hexadecimal number, of length 'digits'
-fn random_hexadecimal(digits: u8) -> String {
+fn random_hexadecimal(digits: u64) -> String {
     const CHARSET: &[u8] = b"0123456789abcdef";
     let mut rng = rand::thread_rng();
 
@@ -245,7 +245,7 @@ fn random_uuid_working() {
 }
 
 /// Return a random string, of size 'size'
-fn random_string(size: u8) -> String {
+fn random_string(size: u64) -> String {
     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
                             abcdefghijklmnopqrstuvwxyz\
                             0123456789)(*&^%$#@!~";
@@ -325,13 +325,11 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(lower: |s: str| s.to_lowercase());
     handlebars_helper!(upper: |s: str| s.to_uppercase());
     handlebars_helper!(current_time: |fmt: str| format!("{}", Local::now().format(fmt)));
-    handlebars_helper!(rand_decimal: |num_digits: str| random_decimal(num_digits.parse::<u8>().unwrap()));
-    //handlebars_helper!(rand_decimal: |digits: u8| random_decimal(digits));
-    
-    handlebars_helper!(rand_int: |min: str, max: str| random_int(min.parse::<u32>().unwrap(), max.parse::<u32>().unwrap()));
-    handlebars_helper!(rand_hexadecimal: |num_digits: str| random_hexadecimal(num_digits.parse::<u8>().unwrap()));
-    // handlebars_helper!(rand_regex: ...);
-    handlebars_helper!(rand_string: |chars: str| format!("{}", random_string(chars.parse::<u8>().unwrap())));
+    handlebars_helper!(rand_decimal: |digits: u64| random_decimal(digits));
+    handlebars_helper!(rand_int: |min: u64, max: u64| random_int(min, max));
+    handlebars_helper!(rand_hexadecimal: |num_digits: u64| random_hexadecimal(num_digits));
+    // handlebars_helper!(rand_regex: |r: str| random_regex(r.to_string()));
+    handlebars_helper!(rand_string: |chars: u64| format!("{}", random_string(chars)));
 
     handlebars_helper!(toJSON: |json_obj_or_none: object|
     if json_obj_or_none.is_empty() {
@@ -350,7 +348,7 @@ fn register_handlebars() -> Handlebars {
     handlebars.register_helper("random_decimal", Box::new(rand_decimal));
     handlebars.register_helper("random_integer", Box::new(rand_int));
     handlebars.register_helper("random_hexadecimal", Box::new(rand_hexadecimal));
-    // handlebars.register_helper("random_regex", Box::new(rand_regex))
+    // handlebars.register_helper("random_regex", Box::new(rand_regex));
     handlebars.register_helper("random_uuid", Box::new(random_uuid_helper));
     handlebars.register_helper("random_string", Box::new(rand_string));
     handlebars.register_helper("random_boolean", Box::new(random_boolean_helper));
