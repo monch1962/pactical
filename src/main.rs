@@ -167,15 +167,6 @@ fn random_int(min: u64, max: u64) -> String {
     r.to_string()
 }
 
-#[test]
-fn random_int_working() {
-    const MIN: u64 = 47;
-    const MAX: u64 = 193;
-    let r = random_int(MIN, MAX);
-    assert!(r.parse::<u64>().unwrap() >= MIN);
-    assert!(r.parse::<u64>().unwrap() < MAX);
-}
-
 /// Return a random decimal number, of length 'digits'
 fn random_decimal(digits: u64) -> String {
     const CHARSET: &[u8] = b"0123456789";
@@ -192,13 +183,6 @@ fn random_decimal(digits: u64) -> String {
     r
 }
 
-#[test]
-fn random_decimal_working() {
-    let r = random_decimal(5);
-    // assert!(r.parse::<u64>().unwrap() >= 0);
-    assert!(r.parse::<u64>().unwrap() < 99999);
-}
-
 /// Return a random hexadecimal number, of length 'digits'
 fn random_hexadecimal(digits: u64) -> String {
     const CHARSET: &[u8] = b"0123456789abcdef";
@@ -213,14 +197,6 @@ fn random_hexadecimal(digits: u64) -> String {
 
     eprintln!("{:?}", r);
     r
-}
-
-#[test]
-fn random_hexadecimal_working() {
-    use regex::Regex;
-    let re = Regex::new(r"^[0-9a-f]{4}$").unwrap();
-    let r = random_hexadecimal(4);
-    assert!(re.is_match(&r));
 }
 
 /// Return a random string that conforms to the supplied regex pattern
@@ -247,14 +223,6 @@ fn random_uuid() -> String {
     )
 }
 
-#[test]
-fn random_uuid_working() {
-    use regex::Regex;
-    let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
-    let r = random_uuid();
-    assert!(re.is_match(&r));
-}
-
 /// Return a random string, of size 'size'
 fn random_string(size: u64) -> String {
     const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
@@ -273,26 +241,12 @@ fn random_string(size: u64) -> String {
     r
 }
 
-#[test]
-fn random_string_working() {
-    use regex::Regex;
-    let re = Regex::new(r"^.{12}$").unwrap();
-    let r = random_string(12);
-    assert!(re.is_match(&r));
-}
-
 /// Return a random boolean
 fn random_boolean() -> String {
     let mut rng = rand::thread_rng();
     let r = rng.gen::<bool>();
     eprintln!("Boolean: {}", r);
     r.to_string()
-}
-
-#[test]
-fn random_boolean_working() {
-    let r = random_boolean();
-    assert!(r == "true" || r == "false");
 }
 
 fn random_boolean_helper(
@@ -449,4 +403,55 @@ fn main() {
             process::exit(103)
         })
     );
+}
+
+mod test {
+    use super::*;
+
+    #[test]
+    fn random_boolean_working() {
+        let r = random_boolean();
+        assert!(r == "true" || r == "false");
+    }
+
+    #[test]
+    fn random_string_working() {
+        use regex::Regex;
+        let re = Regex::new(r"^.{12}$").unwrap();
+        let r = random_string(12);
+        assert!(re.is_match(&r));
+    }
+
+    #[test]
+    fn random_uuid_working() {
+        use regex::Regex;
+        let re =
+            Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
+        let r = random_uuid();
+        assert!(re.is_match(&r));
+    }
+
+    #[test]
+    fn random_hexadecimal_working() {
+        use regex::Regex;
+        let re = Regex::new(r"^[0-9a-f]{4}$").unwrap();
+        let r = random_hexadecimal(4);
+        assert!(re.is_match(&r));
+    }
+
+    #[test]
+    fn random_decimal_working() {
+        let r = random_decimal(5);
+        // assert!(r.parse::<u64>().unwrap() >= 0);
+        assert!(r.parse::<u64>().unwrap() < 99999);
+    }
+
+    #[test]
+    fn random_int_working() {
+        const MIN: u64 = 47;
+        const MAX: u64 = 193;
+        let r = random_int(MIN, MAX);
+        assert!(r.parse::<u64>().unwrap() >= MIN);
+        assert!(r.parse::<u64>().unwrap() < MAX);
+    }
 }
