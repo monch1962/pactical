@@ -1,13 +1,13 @@
 //! This tool processes Pact contracts into ... well, just about anything!
-//! The intended use case is to take a Pact contract and convert it into executable test cases 
+//! The intended use case is to take a Pact contract and convert it into executable test cases
 //! (i.e. to test the provider) and/or executable stubs (i.e. provider mocks, to test a consumer against the mock)
-//! 
+//!
 //! Everything is done using Handlebars templates. Handlebars is a generic templating language, often used for generating
 //! HTML content but useful for a broad range of tasks
-//! 
+//!
 //! Absolutely no limitations on what can be done with this approach. Some other "left field" ideas would include:
 //! - generate PDF documentation of Pact coverage for human viewing &/or approval
-//! 
+//!
 extern crate serde_json;
 #[macro_use]
 extern crate handlebars;
@@ -21,12 +21,12 @@ use std::convert::TryInto;
 // #[macro_use]
 extern crate serde_derive;
 
-use handlebars::{Handlebars, Context, Helper, RenderContext, HelperResult, Output};
+use handlebars::{Context, Handlebars, Helper, HelperResult, Output, RenderContext};
 
 // use serde_json::json;
 // use std::fs;
 // use std::io::{self, Read};
-use std::{env,fs};
+use std::{env, fs};
 
 use serde::{Deserialize, Serialize};
 // use serde_json::Value as JsonValue;
@@ -48,8 +48,8 @@ extern crate rand;
 use rand::Rng;
 
 extern crate rand_regex;
-extern crate regex_syntax;
 extern crate regex;
+extern crate regex_syntax;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Consumer {
@@ -127,7 +127,7 @@ struct Interaction {
     request: Option<Request>,
     response: Option<Response>,
     messages: Option<Messages>,
-    tags: Option<Vec<String>>,  // Added this non-standard extension to Pact to let me select subsets of contracts to execute
+    tags: Option<Vec<String>>, // Added this non-standard extension to Pact to let me select subsets of contracts to execute
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -159,21 +159,12 @@ fn read_template_file(template_env_var: String) -> String {
 }
 
 /// Return a random integer, between 'min' and 'max'
-fn random_int(min: u64, max: u64)  -> String {
+fn random_int(min: u64, max: u64) -> String {
     let mut rng = rand::thread_rng();
     let r = rng.gen_range(min, max);
     eprintln!("Integer: {}", r);
     // println!("Float: {}", rng.gen_range(0.0, 10.0));
     r.to_string()
-}
-
-#[test]
-fn random_int_working() {
-    const MIN:u64 = 47;
-    const MAX:u64 = 193;
-    let r = random_int(MIN, MAX);
-    assert!(r.parse::<u64>().unwrap() >= MIN);
-    assert!(r.parse::<u64>().unwrap() < MAX);
 }
 
 /// Return a random decimal number, of length 'digits'
@@ -188,15 +179,8 @@ fn random_decimal(digits: u64) -> String {
         })
         .collect();
 
-    eprintln!("{:?}", r);    
+    eprintln!("{:?}", r);
     r
-}
-
-#[test]
-fn random_decimal_working() {
-    let r = random_decimal(5);
-    assert!(r.parse::<u64>().unwrap() >= 0);
-    assert!(r.parse::<u64>().unwrap() < 99999);
 }
 
 /// Return a random hexadecimal number, of length 'digits'
@@ -211,16 +195,8 @@ fn random_hexadecimal(digits: u64) -> String {
         })
         .collect();
 
-    eprintln!("{:?}", r);    
+    eprintln!("{:?}", r);
     r
-}
-
-#[test]
-fn random_hexadecimal_working() {
-    use regex::Regex;
-    let re = Regex::new(r"^[0-9a-f]{4}$").unwrap();
-    let r = random_hexadecimal(4);
-    assert!(re.is_match(&r));
 }
 
 /// Return a random string that conforms to the supplied regex pattern
@@ -237,16 +213,14 @@ fn random_regex(pattern: String) -> String {
 
 /// Return a random UIID
 fn random_uuid() -> String {
-    format!("{}-{}-{}-{}-{}",random_hexadecimal(8), random_hexadecimal(4), random_hexadecimal(4),
-        random_hexadecimal(4), random_hexadecimal(12))
-}
-
-#[test]
-fn random_uuid_working() {
-    use regex::Regex;
-    let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
-    let r = random_uuid();
-    assert!(re.is_match(&r));
+    format!(
+        "{}-{}-{}-{}-{}",
+        random_hexadecimal(8),
+        random_hexadecimal(4),
+        random_hexadecimal(4),
+        random_hexadecimal(4),
+        random_hexadecimal(12)
+    )
 }
 
 /// Return a random string, of size 'size'
@@ -263,16 +237,8 @@ fn random_string(size: u64) -> String {
         })
         .collect();
 
-    eprintln!("{:?}", r);    
+    eprintln!("{:?}", r);
     r
-}
-
-#[test]
-fn random_string_working() {
-    use regex::Regex;
-    let re = Regex::new(r"^.{12}$").unwrap();
-    let r = random_string(12);
-    assert!(re.is_match(&r));
 }
 
 /// Return a random boolean
@@ -283,31 +249,42 @@ fn random_boolean() -> String {
     r.to_string()
 }
 
-#[test]
-fn random_boolean_working() {
-    let r = random_boolean();
-    assert!(r == "true" || r == "false");
-}
-
-fn random_boolean_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
-    let result = format!("{}", random_boolean());
+fn random_boolean_helper(
+    _h: &Helper,
+    _: &Handlebars,
+    _: &Context,
+    _rc: &mut RenderContext,
+    out: &mut dyn Output,
+) -> HelperResult {
+    let result = random_boolean().to_string();
     out.write(result.as_ref())?;
     Ok(())
 }
 
 fn lorum_text_helper(words: i64) -> String {
-    let text = lipsum(words.try_into().unwrap());
-    text
+    lipsum(words.try_into().unwrap())
 }
 
-fn lorum_title_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
-    let result = format!("{}", lipsum_title());
+fn lorum_title_helper(
+    _h: &Helper,
+    _: &Handlebars,
+    _: &Context,
+    _rc: &mut RenderContext,
+    out: &mut dyn Output,
+) -> HelperResult {
+    let result = lipsum_title().to_string();
     out.write(result.as_ref())?;
     Ok(())
 }
 
-fn random_uuid_helper(_h: &Helper, _: &Handlebars, _: &Context, _rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
-    let result = format!("{}", random_uuid());
+fn random_uuid_helper(
+    _h: &Helper,
+    _: &Handlebars,
+    _: &Context,
+    _rc: &mut RenderContext,
+    out: &mut dyn Output,
+) -> HelperResult {
+    let result = random_uuid().to_string();
     out.write(result.as_ref())?;
     Ok(())
 }
@@ -333,7 +310,6 @@ fn random_string_helper(h: &Helper, _: &Handlebars, _: &Context, rc: &mut Render
 /// {{envVar "ENV_VARIABLE"}} will render the value of the environment variable ENV_VARIABLE
 /// {{capitalise "abc def"}} will render Abc Def (i.e. make the first letter in every word a capital letter)
 fn register_handlebars() -> Handlebars {
-
     let mut handlebars = Handlebars::new();
 
     // register all Handlebars helpers
@@ -345,14 +321,13 @@ fn register_handlebars() -> Handlebars {
     handlebars_helper!(rand_int: |min: u64, max: u64| random_int(min, max));
     handlebars_helper!(rand_hexadecimal: |num_digits: u64| random_hexadecimal(num_digits));
     handlebars_helper!(rand_regex: |r: str| random_regex(r.to_string()));
-    handlebars_helper!(rand_string: |chars: u64| format!("{}", random_string(chars)));
+    handlebars_helper!(rand_string: |chars: u64| random_string(chars).to_string());
 
     handlebars_helper!(toJSON: |json_obj_or_none: object|
     if json_obj_or_none.is_empty() {
         "{}".into()
     } else {
-        let s = serde_json::to_string_pretty(&json_obj_or_none).unwrap_or_else(|_| "{}".to_string());
-        s
+        serde_json::to_string_pretty(&json_obj_or_none).unwrap_or_else(|_| "{}".to_string())
     });
     handlebars_helper!(escapedJSON: |json_obj_or_none: object| format!("{:?}", serde_json::to_string(&json_obj_or_none).unwrap()));
     handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
@@ -399,8 +374,7 @@ fn read_pact_from_stdin() -> Pact {
 /// read_pact reads a Pact contract from a filename
 /// and returns the Pact as a Pact
 fn read_pact(filename: String) -> Pact {
-    let pact_str = fs::read_to_string(filename)
-        .expect("No Pact supplied in filename",);
+    let pact_str = fs::read_to_string(filename).expect("No Pact supplied in filename");
     let res = serde_json::from_str(&pact_str);
     if res.is_err() {
         eprintln!("{:#?}", res);
@@ -409,7 +383,6 @@ fn read_pact(filename: String) -> Pact {
     let pact: Pact = res.unwrap();
     pact
 }
-
 
 fn main() {
     let pact: Pact = read_pact_from_stdin();
@@ -425,7 +398,62 @@ fn main() {
 
     // Write template+pact to stdout
     eprintln!("{:#?}", result);
-    println!("{}", result.unwrap_or_else(|_| {
-        eprintln!("Found a problem");
-        process::exit(103)}));
+    println!(
+        "{}",
+        result.unwrap_or_else(|_| {
+            eprintln!("Found a problem");
+            process::exit(103)
+        })
+    );
+}
+
+mod unittests {
+    use super::*;
+
+    #[test]
+    fn random_boolean_working() {
+        let r = random_boolean();
+        assert!(r == "true" || r == "false");
+    }
+
+    #[test]
+    fn random_string_working() {
+        use regex::Regex;
+        let re = Regex::new(r"^.{12}$").unwrap();
+        let r = random_string(12);
+        assert!(re.is_match(&r));
+    }
+
+    #[test]
+    fn random_uuid_working() {
+        use regex::Regex;
+        let re =
+            Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
+        let r = random_uuid();
+        assert!(re.is_match(&r));
+    }
+
+    #[test]
+    fn random_hexadecimal_working() {
+        use regex::Regex;
+        let re = Regex::new(r"^[0-9a-f]{4}$").unwrap();
+        let r = random_hexadecimal(4);
+        assert!(re.is_match(&r));
+    }
+
+    #[test]
+    fn random_decimal_working() {
+        let r = random_decimal(5);
+        // assert!(r.parse::<u64>().unwrap() >= 0);
+        assert!(r.parse::<u64>().unwrap() < 99999);
+    }
+
+    #[test]
+    fn random_int_working() {
+        const MIN: u64 = 47;
+        const MAX: u64 = 193;
+        let r = random_int(MIN, MAX);
+        assert!(r.parse::<u64>().unwrap() >= MIN);
+        assert!(r.parse::<u64>().unwrap() < MAX);
+    }
 }
