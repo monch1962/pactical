@@ -1,0 +1,33 @@
+{
+    "info": {
+        "_postman_id": "{{random_uuid}}",
+        "name": "{{consumer.name}} -> {{provider.name}}",
+        "description": "Consumer '{{consumer.name}}' talking to provider '{{provider.name}}'",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{{#each interactions as |i|}}
+        {
+            "name": "{{i.providerState}}",
+            "request": {
+                "method": "{{i.request.method}}",
+                "header": [{{#each i.request.headers as |h|}}
+                    {
+                        "key": "{{@key}}",
+                        "type": "text",
+                        "value": "{{h}}"
+                    }
+                {{/each}}],
+                "body": {
+                    "mode": "raw",
+                    "raw":  {{escapedJSON i.request.body}}
+                },
+                "url": {
+                    "raw": "{{envVar "PROTOCOL"}}://{{envVar "HOSTNAME"}}/{{i.request.path}}",
+                    "protocol": "{{envVar "PROTOCOL"}}"
+                },
+                "description": "{{i.description}}"
+            },
+            "response": []
+        }{{#unless @last}},{{/unless}}{{/each}}
+    ]
+}

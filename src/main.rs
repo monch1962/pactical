@@ -142,7 +142,7 @@ struct Pact {
 /// and return the template as a string
 fn read_template_file(template_env_var: String) -> String {
     let template = template_env_var;
-    println!("Template env var: {}", template);
+    eprintln!("Template env var: {}", template);
 
     let template_filename = format!("./templates/{}.hbs", template);
     let res = File::open(template_filename);
@@ -354,6 +354,7 @@ fn register_handlebars() -> Handlebars {
         let s = serde_json::to_string_pretty(&json_obj_or_none).unwrap_or_else(|_| "{}".to_string());
         s
     });
+    handlebars_helper!(escapedJSON: |json_obj_or_none: object| format!("{:?}", serde_json::to_string(&json_obj_or_none).unwrap()));
     handlebars_helper!(envVar: |s: str| env::var(s).unwrap().to_string());
     handlebars_helper!(capitalise: |s: str| s.to_title_case());
     handlebars_helper!(lorum_text: |words: i64| lorum_text_helper(words));
@@ -370,6 +371,7 @@ fn register_handlebars() -> Handlebars {
     handlebars.register_helper("random_string", Box::new(rand_string));
     handlebars.register_helper("random_boolean", Box::new(random_boolean_helper));
     handlebars.register_helper("toJSON", Box::new(toJSON));
+    handlebars.register_helper("escapedJSON", Box::new(escapedJSON));
     handlebars.register_helper("envVar", Box::new(envVar));
     handlebars.register_helper("capitalise", Box::new(capitalise));
     handlebars.register_helper("lorum_text", Box::new(lorum_text));
