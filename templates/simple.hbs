@@ -8,16 +8,16 @@ consumer.name: "{{upper consumer.name}}"
 
 interactions: {{interactions}}
 
-{{#each interactions as |i|}}
-Inside interaction
+{{#each interactions as |i|}}Inside interaction
 description (state): {{i.description}} ({{i.providerState}})
 request: {{request.method}} {{request.path}}
 request.headers: {{toJSON i.request.headers}}
-request.body: {{toJSON i.request.body}}
+{{#if i.request.body}}request.body: {{toJSON i.request.body}}{{/if}}
+{{#if i.request.body}}escaped request.body: {{escapedJSON i.request.body}}{{/if}}
 request.query: {{i.request.query}}
 response.status {{i.response.status}}
 response.headers: {{response.headers}}
-response.body: {{i.response.body}}
+{{#if i.response.body}}response.body: {{toJSON i.response.body}}{{/if}}
 {{/each}}
 
 metadata: {{toJSON metadata}}

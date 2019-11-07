@@ -1,4 +1,4 @@
-// Generated node-mocha-chai test case to test a REST API
+// Generated node-mocha-chai test case to test '{{consumer.name}}' -> '{{provider.name}}' interactions
 
 const app = require("../app")
 const chai = require("chai")
@@ -14,7 +14,7 @@ describe("{{consumer.name}} -> {{provider.name}}", () => { {{#each interactions 
       .end((err, res) => {
         expect(res).to.have.status({{i.response.status}})
         // expect(res.body.status).to.equals("success")
-        expect(res.body.message).to.equals("{{i.response.body}}")
+        {{#if i.response.body}}expect(res.body.message).to.equals("{{toJSON i.response.body}}"){{/if}}
         done()
       })
   }){{/each}}
