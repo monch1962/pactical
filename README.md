@@ -48,6 +48,24 @@ Run it, using a sample Pact and a simple template
 
 `$ cat sample-pacts/sample.pact.v2.json | TEMPLATE=simple cargo run`
 
+### Using different templates
+
+To use a different template, simply change the `TEMPLATE=...` value supplied to Pactical.
+
+For example, to generate Karate stubs use the karate-stub template:
+
+`$ cat sample-pacts/sample.pact.v2.json | TEMPLATE=karate-stub cargo run`
+
+To generate Karate tests use the karate-tests template:
+
+`$ cat sample-pacts/sample.pact.v2.json | TEMPLATE=karate-tests cargo run`
+
+To generate a Hoverfly stub configuration use the hoverfly template:
+
+`$ cat sample-pacts/sample.pact.v2.json | TEMPLATE=hoverfly cargo run`
+
+Different stubs are in the `./templates` directory. Note that some of these templates will require you to supply specific environment variables when run - check the relevant template `.hbs` for instructions on how to use it.
+
 ### Using your own templates
 
 It's quite likely that you'll want to use your own templates. To do this when running locally, simply add your templates to the `\templates` directory
@@ -65,6 +83,14 @@ Execute the Docker image, supplying a Pact and a template file (./templates/simp
 `$ cat sample-pacts/sample.pact.v2.json | docker run -e TEMPLATE=simple -i pactical:latest`
 
 Note that, in use, you'd only build the Pactical Docker image once, then store it in a Docker registry where you can retrieve and use it on demand. The Dockerfile is designed to generate minimal Docker images (currently around 3.6Mb in size), so that storing and retrieving them from a Docker registry is as cheap and fast as possible.
+
+As per the above instructions, you can substitute in different templates to generate different "views" of your Pact.
+
+For example, 
+
+`$ cat sample-pacts/sample.pact.v2.json | docker run -e TEMPLATE=karate-tests -i pactical:latest`
+
+will generate a set of Karate tests that correspond to the content of your Pact.
 
 ### Using your own templates within Docker
 
