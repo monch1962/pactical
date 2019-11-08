@@ -1,3 +1,6 @@
+{{!-- This template can be used to create Hoverfly stub definitions from Pacts
+Note that it relies on an environment variable HOSTNAME being supplied; if this
+env var is not provided, this template may crash}}--}}
 {
     "meta": {
         "timeExported": "{{isoTimeRFC3339}}",
@@ -31,13 +34,14 @@
             },
             "response": {
                 "status": {{i.response.status}},
-                {{#if i.response.body}}"body": {{toJSON i.response.body}}},
+                {{#if i.response.body}}"body": {{toJSON i.response.body}},
                 "encodedBody": false,{{/if}}
                 {{#if i.response.headers}}"headers": {{toJSON i.response.headers}},{{/if}}
                 "templated": false
             }
         }{{#unless @last}},
-        {{/unless}}{{/each}}],
+        {{/unless}}{{/each}}
+        ],
         "globalActions": {
             "delays": []
         }
