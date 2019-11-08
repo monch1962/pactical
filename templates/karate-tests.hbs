@@ -1,4 +1,6 @@
-Feature: Consumer '{{consumer.name}}' sending requests to provider '{{provider.name}}'
+{{!--
+This template can be used to generate executable Karate test cases from a Pact contract
+ --}}Feature: Consumer '{{consumer.name}}' sending requests to provider '{{provider.name}}'
 
 {{#each interactions as |i|}}
   Scenario: {{description}} ({{i.providerState}})

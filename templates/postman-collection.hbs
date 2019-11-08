@@ -1,4 +1,11 @@
-{
+{{!-- 
+This template produces a JSON file, suitable for importing into Postman.
+Note that the following environment variables are required:
+- PROTOCOL (which can be "http" or "https"
+- HOSTNAME (which is of the form "www.myhost.com"
+
+If any of these environment variables aren't defined, you can expect Pactical to fail
+--}}{
     "info": {
         "_postman_id": "{{random_uuid}}",
         "name": "{{consumer.name}} -> {{provider.name}}",
@@ -23,7 +30,9 @@
                 },
                 "url": {
                     "raw": "{{envVar "PROTOCOL"}}://{{envVar "HOSTNAME"}}/{{i.request.path}}",
-                    "protocol": "{{envVar "PROTOCOL"}}"
+                    "protocol": "{{envVar "PROTOCOL"}}",
+                    "host": "{{envVar "HOSTNAME"}}",
+                    "path": "{{i.request.path}}"
                 },
                 "description": "{{i.description}}"
             },
