@@ -2,21 +2,20 @@ import org.springframework.cloud.contract.spec.Contract
 
 {{#each interactions}}
 Contract.make {
-description "{{description}} ({{{provider_state}}})"
+    description "{{description}} ({{{provider_state}}})"
 
-request {
-url "{{request.path}}"
-headers {{{toJSON request.headers}}}
-method {{request.method}}
-}
+    request {
+        url "{{request.path}}"
+        headers {{toJSON request.headers}}
+        method {{request.method}}
+    }
 
-response {
-status {{response.status}}
-headers {{{toJSON response.headers}}}
-body (
-{{{toJSON response.body}}}
-)
+    response {
+        status {{response.status}}
+        {{#if response.headers}}headers {{toJSON response.headers}}{{/if}}
+        body (
+            {{#if response.body}}{{toJSON response.body}}{{/if}}
+        )
+    }
 }
-}
-
 {{/each}}
