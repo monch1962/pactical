@@ -2,6 +2,8 @@
 Use this template to generate Python/tavern API test cases from Pact contracts
 Tavern info is at https://taverntesting.github.io/
 
+Note that this template expects environment variables PROTOCOL and HOSTNAME to be defined. If not, this template will fail
+
 Save the output from running this template as a YAML file e.g. test_1.tavern.yaml
 
 Note that pytest will only execute test case files that conform to the pattern `test_*.tavern.yaml`
@@ -10,7 +12,6 @@ To use:
 $ pip install tavern[pytest]
 $ py.test test_1.tavern.yaml -v
 --}}
-# Python/tavern test case generated from Pact
 ---
 test_name: {{consumer.name}} -> {{provider.name}}
 
