@@ -1,0 +1,30 @@
+{{!-- 
+Use this template to generate Python/tavern API test cases from Pact contracts
+Tavern info is at https://taverntesting.github.io/
+
+Save the output from running this template as a YAML file e.g. test_1.tavern.yaml
+
+Note that pytest will only execute test case files that conform to the pattern `test_*.tavern.yaml`
+
+To use:
+$ pip install tavern[pytest]
+$ py.test test_1.tavern.yaml -v
+--}}
+# Python/tavern test case generated from Pact
+---
+test_name: {{consumer.name}} -> {{provider.name}}
+
+stages: {{#each interactions as |i|}}
+    - name: {{i.description}} ({{i.providerState}})
+      request:
+        url: {{envVar "PROTOCOL"}}://{{envVar "HOSTNAME"}}{{i.request.path}}
+        method: {{upper i.request.method}}{{#if i.request.headers}}
+        headers: {{#each request.headers}}
+          {{lower @key}}: {{this}}{{/each}}{{/if}}
+      response:
+        status_code: {{i.response.status}}{{#if i.response.headers}}
+        headers: {{#each response.headers}}
+          {{lower @key}}: {{this}}{{/each}}{{/if}}{{#if i.response.body}}
+        body: {{#each response.body}}
+          {{@key}}: {{this}}{{/each}}{{/if}}
+{{/each}}
