@@ -57,6 +57,7 @@ It's quite likely that you'll want to use your own templates. To do this when ru
 This code is designed to be CI-friendly, so running it via a Docker container is the recommended way of working. You can augment the steps below to fit within your own CI framework and practices.
 
 Build the Docker image
+
 `$ docker build -t pactical .`
 
 Execute the Docker image, supplying a Pact and a template file (./templates/simple.hbs in this case)
