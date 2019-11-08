@@ -5,7 +5,8 @@
     "provider": {
         "name": "bobby"
     },
-    "interactions": [{
+    "interactions": [
+        {
             "description": "My test",
             "providerState": "User billy exists",
             "request": {
