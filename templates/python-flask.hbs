@@ -1,0 +1,11 @@
+{{!-- 
+Template to generate a Python Flask server--}}from app import app
+from flask import Response, request
+{{#each interactions as |i|}}
+@app.route('{{i.request.path}}')
+def fn_{{random_hexadecimal 9}}():
+    headers = request.headers
+    resp = Response('{{#if i.response.body}}{{toJSON i.response.body}}{{/if}}', status={{i.response.status}}){{#each i.response.headers as |h|}}
+    resp.headers[{{@key}}] = '{{this}}'{{/each}}
+    return resp
+{{/each}}
