@@ -34,6 +34,12 @@ Current helpers include:
 - lorum_title (return a Latin title; useful for generating random text title content)
 - random_regex (return a string that conforms to the supplied regex)
 
+## To download
+
+`$ git clone https://github.com/monch1962/pactical`
+
+`$ cd pactical`
+
 ## To build locally
 
 Ensure you have a working Rust development environment
