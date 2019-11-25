@@ -1,0 +1,27 @@
+import http from "k6/http";
+import { check, sleep } from "k6";
+
+//export let options = {
+//  vus: ${__ENV.VUS},
+//  duration: "${__ENV.DURATION}s"
+//};
+
+export default function() {
+  let site = "http://" + ${__ENV.SITE} + "/";
+  // let res = http.get("http://test.loadimpact.com")
+  const payload = JSON.stringify({{i.request.body}})
+  const params = { headers: {"Content-Type": "application/json"} }
+  check(http.get("http://test.loadimpact.com"), {
+    "status was 200": (r) => r.status == 200,
+    "transaction time OK": (r) => r.timings.duration < ${__ENV.MAX_RESP_TIME}
+  })
+  let responses = http.batch([
+{{#each interactions as |i|}}    ["{{i.request.method}}", site + "{{i.request.path}}", {{#if i.request.body}}{{toJSON i.request.body}}{{else}}null{{/if}}, {{#if request.headers}}{ headers: { {{#each request.headers}}"{{@key}}": "{{this}}", {{/each}} }{{else}}null{{/if}}],
+{{/each}}  ])
+  check (responses, {
+{{#each interactions as |i|}}    "status of {{i.description}} ({{i.provider.state}}) is {{i.response.status}}": res => res[0].status = {{i.response.status}},
+{{#if i.response.body}}    "body of {{i.description}} ({{i.provider.state}}) is {{i.response.body}}: res => res[0].body = {{toJSON i.response.body}},{{/if}}
+{{#if i.response.headers}}    "headers of {{i.description}} ({{i.provider.state}}) is {{i.response.headers}}: res => res[0].headers = {{toJSON i.response.headers}},{{/if}}
+{{/each}}  })
+  // sleep(1)
+};
