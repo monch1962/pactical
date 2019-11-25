@@ -1,4 +1,12 @@
-import http from "k6/http";
+{{!--
+Template to generate performance tests that can run under k6 (https://k6.io)
+Note that these tests will require some environment variables to be set in order to execute correctly
+- SITE should refer to the base URL for the system being tested
+- MAX_RESP_TIME should refer to e.g. the 95%ile or 99%ile response time for the test being executed
+
+Note also that the generated k6 test assumes each endpoint will have the same workload applied against it. If this
+isn't the intention, you should either edit this template or manually edit the generated test case
+--}}import http from "k6/http";
 import { check, sleep } from "k6";
 
 //export let options = {
@@ -11,12 +19,12 @@ export default function() {
   // let res = http.get("http://test.loadimpact.com")
   const payload = JSON.stringify({{i.request.body}})
   const params = { headers: {"Content-Type": "application/json"} }
-  check(http.get("http://test.loadimpact.com"), {
-    "status was 200": (r) => r.status == 200,
-    "transaction time OK": (r) => r.timings.duration < ${__ENV.MAX_RESP_TIME}
-  })
+  // check(http.get("http://test.loadimpact.com"), {
+  //   "status was 200": (r) => r.status == 200,
+  //   "transaction time OK": (r) => r.timings.duration < ${__ENV.MAX_RESP_TIME}
+  // })
   let responses = http.batch([
-{{#each interactions as |i|}}    ["{{i.request.method}}", site + "{{i.request.path}}", {{#if i.request.body}}{{toJSON i.request.body}}{{else}}null{{/if}}, {{#if request.headers}}{ headers: { {{#each request.headers}}"{{@key}}": "{{this}}", {{/each}} }{{else}}null{{/if}}],
+{{#each interactions as |i|}}    ["{{i.request.method}}", site + "{{i.request.path}}", {{#if i.request.body}}{{toJSON i.request.body}}{{else}}null{{/if}}, {{#if request.headers}}{ headers: { {{#each request.headers}}"{{@key}}": "{{this}}", {{/each}}}{{else}}null{{/if}}],
 {{/each}}  ])
   check (responses, {
 {{#each interactions as |i|}}    "status of '{{i.description}} ({{i.providerState}})' is {{i.response.status}}": res => res[{{@index}}].status = {{i.response.status}},{{#if i.response.body}}
