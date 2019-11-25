@@ -19,9 +19,9 @@ export default function() {
 {{#each interactions as |i|}}    ["{{i.request.method}}", site + "{{i.request.path}}", {{#if i.request.body}}{{toJSON i.request.body}}{{else}}null{{/if}}, {{#if request.headers}}{ headers: { {{#each request.headers}}"{{@key}}": "{{this}}", {{/each}} }{{else}}null{{/if}}],
 {{/each}}  ])
   check (responses, {
-{{#each interactions as |i|}}    "status of {{i.description}} ({{i.provider.state}}) is {{i.response.status}}": res => res[0].status = {{i.response.status}},
-{{#if i.response.body}}    "body of {{i.description}} ({{i.provider.state}}) is {{i.response.body}}: res => res[0].body = {{toJSON i.response.body}},{{/if}}
-{{#if i.response.headers}}    "headers of {{i.description}} ({{i.provider.state}}) is {{i.response.headers}}: res => res[0].headers = {{toJSON i.response.headers}},{{/if}}
+{{#each interactions as |i|}}    "status of '{{i.description}} ({{i.providerState}})' is {{i.response.status}}": res => res[{{@index}}].status = {{i.response.status}},{{#if i.response.body}}
+    "body of '{{i.description}} ({{i.providerState}}') is {{toJSON i.response.body}}: res => res[{{@index}}].body = {{toJSON i.response.body}},{{/if}}{{#if i.response.headers}}
+    "headers of '{{i.description}} ({{i.providerState}})' is {{i.response.headers}}: res => res[{{@index}}].headers = {{toJSON i.response.headers}},{{/if}}
 {{/each}}  })
   // sleep(1)
 };
