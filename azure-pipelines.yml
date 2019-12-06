@@ -39,3 +39,7 @@ steps:
     docker build -t pactical .
     cat sample-pacts/sample.pact.v2.json | docker run -e TEMPLATE=simple -i pactical:latest
   displayName: 'Build Docker image and run a simple test to confirm it works'
+
+- script: |
+    docker run --rm -i hadolint/hadolint < Dockerfile
+  displayName: 'Run hadolint checks against the Dockerfile to highlight any concerns'
