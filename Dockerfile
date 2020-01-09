@@ -1,6 +1,8 @@
 # Dockerfile for creating a statically-linked Rust application using docker's
 # multi-stage build feature. This also leverages the docker build cache to avoid
 # re-downloading dependencies if they have not changed.
+
+# hadolint ignore=DL3007
 FROM rust:latest AS build
 WORKDIR /usr/src
 
